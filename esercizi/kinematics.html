@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Esercizi me</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <style> body { padding-top: 60px; } </style>
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Esercizi meccanica</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="vectors.html">Vettori</a></li>
+            <li class="active"><a href="kinematics.html">Cinematica</a></li>
+            <li><a href="dynamics.html">Dinamica</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="starter-template"> <h2>Vettori e linear algebra</h2> </div>
+      <div class="row">
+        <div class="col-md-4"> 
+          <svg id="traj">
+            <marker id="triangle" viewBox="0 0 10 10" refX="0" refY="5" 
+                    markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker> 
+            
+          </svg>
+        </div>
+        <div class="col-md-8">
+       </div>
+      </div>
+    </div><!-- /.container -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/d3.v3.min.js"></script>
+    <script>
+
+    var trjsvg = d3.select("#traj");
+    var width = trjsvg.style("width");
+    var height = width;
+    trjsvg.style("height", height);
+
+    var x = d3.scale.linear().domain([0, 1]).range([0, width]);
+    var y = d3.scale.linear().domain([0, 1]).range([height, 0]); 
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var yAxis = d3.svg.axis().scale(y).orient("left");
+
+    var data = d3.range(20).map(function(i) {
+      return {x: i / 19, y: (Math.sin(i / 3) + 2) / 4};
+    });
+
+    var line = d3.svg.line()
+        .x(function(d) { return x(d.x); })
+        .y(function(d) { return y(d.y); });
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
+
+svg.append("path")
+    .attr("class", "line")
+    .attr("d", line);
+
+svg.selectAll(".dot")
+    .data(data)
+  .enter().append("circle")
+    .attr("class", "dot")
+    .attr("cx", line.x())
+    .attr("cy", line.y())
+    .attr("r", 3.5);
+
+
+
+    </script>
+  </body>
+</html>
