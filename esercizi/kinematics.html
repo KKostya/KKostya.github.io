@@ -10,16 +10,10 @@
     <style> 
         body  { padding-top: 60px; } 
         .tick { font: 10px sans-serif; }
-        .axis path, .axis line {
-          fill: none;
-          stroke: #000;
-          shape-rendering: crispEdges;
-
-        }
-        
+        .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
         .line { fill: none; stroke: steelblue; stroke-width: 1.5px; }
         .velocity { fill: blue; stroke: blue; stroke-width: 1.5px; marker-end: url(#triangle);}
-
+        .dot  { fill: red; }
     </style>
 
     <!--[if lt IE 9]>
@@ -51,8 +45,11 @@
     </div>
 
     <div class="container">
+      <div class="row">
+         <div class="col-md-1"> <h4>Pdfs:</h4> </div>
+         <div class="col-md-6"> <h4><a href="files/ecc3.pdf">Esercizi3.pdf</a></h4> </div>
+      </div>
       <div class="starter-template"> <h2>Cinematica</h2> </div>
-      <p> <a href="files/ecc3.pdf">Esercizi3</a>
       <div class="row">
         <div class="col-md-4"> 
           <svg id="traj">
@@ -69,6 +66,28 @@
               <path d="M 0 0 L 10 5 L 0 10 z" />
             </marker> 
           </svg>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"> 
+     <!--     <div class="input-group input-group-sm">
+            <span class="input-group-addon">X</span>
+             <input type="text" class="form-control">
+          </div>
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon">Y</span>
+            <input type="text" class="form-control">
+          </div>
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon">V<sub>x</sub></span>
+            <input type="text" class="form-control">
+          </div>
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon">V<sub>y</sub></span>
+            <input type="text" class="form-control">
+          </div>-->
+        </div> 
+        <div class="col-md-8">
           <svg id="yoft">
             <marker id="triangle" viewBox="0 0 10 10" refX="0" refY="5" 
                     markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
@@ -85,11 +104,11 @@
     <script src="js/lineChart.js"></script>
     <script>
 
-    var data = d3.range(60).map(function(i) {
-      return { x: (Math.cos(i/9)+2)/4, 
-               y: (Math.sin(i/9)+2)/4, 
-              vx: -Math.sin(i/9)/36, 
-              vy:  Math.cos(i/9)/36, 
+    var data = d3.range(61).map(function(i) {
+      return { x: (Math.cos(Math.PI*i/30)+2)/4, 
+               y: (Math.sin(Math.PI*i/30)+2)/4, 
+              vx: -Math.PI*Math.sin(Math.PI*i/30)/120, 
+              vy:  Math.PI*Math.cos(Math.PI*i/30)/120, 
                t: i };
     });
 
@@ -101,18 +120,21 @@
         width2 = parseInt(xoftsvg.style("width")),
         height = width1;
 
-    var chart1 = lineChart().width(width1).height(height);
+    var chart1 = lineChart().width(width1).height(height)
+                            .xTitle("Coordinata x").yTitle("Coordinata y");
     trjsvg.call(chart1);
 
     var chart2 = lineChart().width(width2).height(height)
                             .x(function(d){return d.t}).y(function(d){return d.x})
                             .vx(function(d){return 10}).vy(function(d){return 10*d.vx})
+                            .xTitle("Tempo t").yTitle("Coordinata x")
                             .xDomain([0,60]);
     xoftsvg.call(chart2);
 
     var chart3 = lineChart().width(width2).height(height)
                             .x(function(d){return d.t}).y(function(d){return d.y})
                             .vx(function(d){return 10}).vy(function(d){return 10*d.vy})
+                            .xTitle("Tempo t").yTitle("Coordinata y")
                             .xDomain([0,60]);
     yoftsvg.call(chart3);
 

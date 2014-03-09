@@ -1,11 +1,12 @@
 function lineChart() {
-    var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    var margin = {top: 20, right: 30, bottom: 40, left: 60},
         width  = 300, xDomain = [0, 1],
         height = 300, yDomain = [0, 1],
         xScale = d3.scale.linear(),
         yScale = d3.scale.linear(),
         xAxis  = d3.svg.axis().scale(xScale).orient("bottom"),
         yAxis  = d3.svg.axis().scale(yScale).orient("left"),
+        xTitle = "x", yTitle = "y",
         x = function(d) {return d.x;}, vx = function(d) {return 10*d.vx;}, 
         y = function(d) {return d.y;}, vy = function(d) {return 10*d.vy;};
 
@@ -40,37 +41,46 @@ function lineChart() {
             svg.append("text")
                .style("text-anchor", "middle")
                .attr("x", xScale((xDomain[1]+xDomain[0])/2))
-               .attr("y", yScale.range()[0] + margin.bottom)
-               .text("x"); 
-        
+               .attr("y", yScale.range()[0] + 0.8*margin.bottom)
+               .text(xTitle); 
+       
+            var ordlabelx = xScale.range()[0] - 0.8*margin.left,
+                ordlabely = yScale((yDomain[1]+yDomain[0])/2);
             svg.append("text")
                .style("text-anchor", "middle")
-               .attr("transform", "rotate(-90)")
-               .attr("y",  xScale.range[0])
-               .attr("x", -yScale((yDomain[1]+yDomain[0])/2))
-               .text("y"); 
+               .attr("x", ordlabelx).attr("y", ordlabely)
+               .attr("transform", "rotate(-90 "+ordlabelx+" "+ordlabely+")")
+               .text(yTitle); 
         
-
-
             // The graph itself
             svg.select(".line").attr("d", line(data));
 
-
-            vvv = data[4];
-            svg.append("line").attr("class", "velocity")
-               .attr("x1", xScale(x(vvv))).attr("y1", yScale(y(vvv)))
-               .attr("x2", xScale(x(vvv) + vx(vvv))).attr("y2", yScale(y(vvv) + vy(vvv)));
+            var i = 0;
+            var tang  = svg.append("line").attr("class", "velocity");
+            var point = svg.append("circle")
+                           .attr("class", "dot")
+                           .attr("r", 4);
+            var tupdate = function()
+            {
+               point.attr("cx", xScale(x(data[i]))).attr("cy", yScale(y(data[i])));
+               tang.attr("x1", xScale(x(data[i]))).attr("y1", yScale(y(data[i])))
+                   .attr("x2", xScale(x(data[i]) + vx(data[i]))).attr("y2", yScale(y(data[i]) + vy(data[i])));
+               i++; if(i >= data.length) i = 0;
+               d3.timer(tupdate,100); 
+               return true;
+            }
+            d3.timer(tupdate,0); 
         });
     } 
-
-
-    
 
     chart.width  = function(value) { if (!arguments.length) return  width;  width = value; return chart; };
     chart.height = function(value) { if (!arguments.length) return height; height = value; return chart; };
 
     chart.xDomain = function(value) { if (!arguments.length) return xDomain; xDomain = value; return chart; };
     chart.yDomain = function(value) { if (!arguments.length) return yDomain; yDomain = value; return chart; };
+
+    chart.xTitle = function(value) { if (!arguments.length) return xTitle; xTitle = value; return chart; };
+    chart.yTitle = function(value) { if (!arguments.length) return yTitle; yTitle = value; return chart; };
 
     chart.x = function(value) { if (!arguments.length) return x; x = value; return chart; };
     chart.y = function(value) { if (!arguments.length) return y; y = value; return chart; };
