@@ -7,7 +7,20 @@
     <title>Esercizi me</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
 
-    <style> body { padding-top: 60px; } </style>
+    <style> 
+        body  { padding-top: 60px; } 
+        .tick { font: 10px sans-serif; }
+        .axis path, .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+
+        }
+        
+        .line { fill: none; stroke: steelblue; stroke-width: 1.5px; }
+        .velocity { fill: blue; stroke: blue; stroke-width: 1.5px; marker-end: url(#triangle);}
+
+    </style>
 
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -50,56 +63,58 @@
           </svg>
         </div>
         <div class="col-md-8">
-       </div>
+          <svg id="xoft">
+            <marker id="triangle" viewBox="0 0 10 10" refX="0" refY="5" 
+                    markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker> 
+          </svg>
+          <svg id="yoft">
+            <marker id="triangle" viewBox="0 0 10 10" refX="0" refY="5" 
+                    markerUnits="strokeWidth" markerWidth="4" markerHeight="3" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" />
+            </marker> 
+          </svg>
+        </div>
       </div>
     </div><!-- /.container -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/d3.v3.min.js"></script>
+    <script src="js/lineChart.js"></script>
     <script>
 
-    var trjsvg = d3.select("#traj");
-    var width = trjsvg.style("width");
-    var height = width;
-    trjsvg.style("height", height);
-
-    var x = d3.scale.linear().domain([0, 1]).range([0, width]);
-    var y = d3.scale.linear().domain([0, 1]).range([height, 0]); 
-
-    var xAxis = d3.svg.axis().scale(x).orient("bottom");
-    var yAxis = d3.svg.axis().scale(y).orient("left");
-
-    var data = d3.range(20).map(function(i) {
-      return {x: i / 19, y: (Math.sin(i / 3) + 2) / 4};
+    var data = d3.range(60).map(function(i) {
+      return { x: (Math.cos(i/9)+2)/4, 
+               y: (Math.sin(i/9)+2)/4, 
+              vx: -Math.sin(i/9)/36, 
+              vy:  Math.cos(i/9)/36, 
+               t: i };
     });
 
-    var line = d3.svg.line()
-        .x(function(d) { return x(d.x); })
-        .y(function(d) { return y(d.y); });
+    var trjsvg  = d3.select("#traj").datum(data),
+        xoftsvg = d3.select("#xoft").datum(data),
+        yoftsvg = d3.select("#yoft").datum(data);
 
-svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+    var width1 = parseInt( trjsvg.style("width")),
+        width2 = parseInt(xoftsvg.style("width")),
+        height = width1;
 
-svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
+    var chart1 = lineChart().width(width1).height(height);
+    trjsvg.call(chart1);
 
-svg.append("path")
-    .attr("class", "line")
-    .attr("d", line);
+    var chart2 = lineChart().width(width2).height(height)
+                            .x(function(d){return d.t}).y(function(d){return d.x})
+                            .vx(function(d){return 10}).vy(function(d){return 10*d.vx})
+                            .xDomain([0,60]);
+    xoftsvg.call(chart2);
 
-svg.selectAll(".dot")
-    .data(data)
-  .enter().append("circle")
-    .attr("class", "dot")
-    .attr("cx", line.x())
-    .attr("cy", line.y())
-    .attr("r", 3.5);
-
-
+    var chart3 = lineChart().width(width2).height(height)
+                            .x(function(d){return d.t}).y(function(d){return d.y})
+                            .vx(function(d){return 10}).vy(function(d){return 10*d.vy})
+                            .xDomain([0,60]);
+    yoftsvg.call(chart3);
 
     </script>
   </body>
