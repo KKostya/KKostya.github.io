@@ -106,6 +106,26 @@
 
     d3.select("#inx").node().value = "(Math.cos(t)+2)/4";
     d3.select("#iny").node().value = "(Math.sin(t)+2)/4";
+    d3.select("#invx").node().value = "-Math.sin(t)/4";
+    d3.select("#invy").node().value = "Math.cos(t)/4";
+
+    function parseInputs()
+    {
+        var inx = d3.select("#inx").node().value; 
+        var iny = d3.select("#iny").node().value; 
+        var invx = d3.select("#invx").node().value; 
+        var invy = d3.select("#invy").node().value; 
+
+        var parseit = function(s)
+        {
+           var fval;
+           eval("fval = function(t){return " + s + ";}")
+           return fval;
+        }
+        
+        return { fx: parseit(inx),}
+    }
+
 
     var data = d3.range(61).map(function(i) {
       return { x: (Math.cos(Math.PI*i/30)+2)/4, 
