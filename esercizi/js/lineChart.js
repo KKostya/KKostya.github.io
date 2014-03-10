@@ -14,6 +14,8 @@ function lineChart() {
         .x(function(d) { return xScale(x(d)); })
         .y(function(d) { return yScale(y(d)); });
 
+    var tupdate = 0;
+
     function chart(selection) {
         selection.each(function(data, i){
             // Setting parent w and h
@@ -21,24 +23,19 @@ function lineChart() {
             // Select the svg element.
             var svg = d3.select(this).selectAll("g").data([data]);
 
+            // Axes 
+            xScale.domain(xDomain).range([0,  width - margin.right - margin.left]);
+            yScale.domain(yDomain).range([height - margin.top - margin.bottom, 0]); 
+
             // Otherwise, create the skeletal chart.
             var gEnter = svg.enter().append("g");
             gEnter.append("path").attr("class", "line");
             gEnter.append("g").attr("class", "x axis");
             gEnter.append("g").attr("class", "y axis");
+            gEnter.append("line").attr("class", "velocity");
+            gEnter.append("circle").attr("class", "dot").attr("r", 4);
 
-            // Updating
-            svg = svg.attr("transform", 
-                "translate(" + margin.left + "," + margin.top + ")");
-       
-            // Axes 
-            xScale.domain(xDomain).range([0,  width - margin.right - margin.left]);
-            yScale.domain(yDomain).range([height - margin.top - margin.bottom, 0]); 
-
-            svg.select(".x.axis").attr("transform", "translate(0," + yScale.range()[0] + ")").call(xAxis);
-            svg.select(".y.axis").call(yAxis);
-
-            svg.append("text")
+            gEnter.append("text")
                .style("text-anchor", "middle")
                .attr("x", xScale((xDomain[1]+xDomain[0])/2))
                .attr("y", yScale.range()[0] + 0.8*margin.bottom)
@@ -46,30 +43,34 @@ function lineChart() {
        
             var ordlabelx = xScale.range()[0] - 0.8*margin.left,
                 ordlabely = yScale((yDomain[1]+yDomain[0])/2);
-            svg.append("text")
+            gEnter.append("text")
                .style("text-anchor", "middle")
                .attr("x", ordlabelx).attr("y", ordlabely)
                .attr("transform", "rotate(-90 "+ordlabelx+" "+ordlabely+")")
                .text(yTitle); 
         
+            // Updating
+            svg = svg.attr("transform", 
+                "translate(" + margin.left + "," + margin.top + ")");
+       
+            svg.select(".x.axis").attr("transform", "translate(0," + yScale.range()[0] + ")").call(xAxis);
+            svg.select(".y.axis").call(yAxis);
+
             // The graph itself
             svg.select(".line").attr("d", line(data));
 
             var i = 0;
-            var tang  = svg.append("line").attr("class", "velocity");
-            var point = svg.append("circle")
-                           .attr("class", "dot")
-                           .attr("r", 4);
-            var tupdate = function()
+            var lnch = (tupdate == 0);
+            tupdate = function()
             {
-               point.attr("cx", xScale(x(data[i]))).attr("cy", yScale(y(data[i])));
-               tang.attr("x1", xScale(x(data[i]))).attr("y1", yScale(y(data[i])))
+               svg.select(".dot").attr("cx", xScale(x(data[i]))).attr("cy", yScale(y(data[i])));
+               svg.select(".velocity").attr("x1", xScale(x(data[i]))).attr("y1", yScale(y(data[i])))
                    .attr("x2", xScale(x(data[i]) + vx(data[i]))).attr("y2", yScale(y(data[i]) + vy(data[i])));
                i++; if(i >= data.length) i = 0;
                d3.timer(tupdate,100); 
                return true;
             }
-            d3.timer(tupdate,0); 
+            if(lnch) d3.timer(tupdate,0); 
         });
     } 
 

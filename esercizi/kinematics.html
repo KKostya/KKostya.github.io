@@ -86,6 +86,9 @@
             <span class="input-group-addon">V<sub>y</sub></span>
             <input type="text" id="invy" class="form-control">
           </div>
+          <div>
+          <button class="btn btn-default" onclick="upd();">Set</button>
+          </div>
         </div> 
         <div class="col-md-8">
           <svg id="yoft">
@@ -123,21 +126,28 @@
            return fval;
         }
         
-        return { fx: parseit(inx),}
+        return { fx: parseit(inx), fy: parseit(iny), fvx: parseit(invx), fvy: parseit(invy)};
     }
 
-
-    var data = d3.range(61).map(function(i) {
-      return { x: (Math.cos(Math.PI*i/30)+2)/4, 
-               y: (Math.sin(Math.PI*i/30)+2)/4, 
-              vx: -Math.PI*Math.sin(Math.PI*i/30)/4, 
-              vy:  Math.PI*Math.cos(Math.PI*i/30)/4, 
-               t: Math.PI*i/30 };
-    });
+    var data;
 
     var trjsvg  = d3.select("#traj").datum(data),
         xoftsvg = d3.select("#xoft").datum(data),
         yoftsvg = d3.select("#yoft").datum(data);
+
+    function calcdata()
+    {
+        var funcs = parseInputs();
+        
+        data = d3.range(61).map(function(i) {
+          return { x: funcs.fx(Math.PI*i/30), 
+                   y: funcs.fy(Math.PI*i/30), 
+                  vx: Math.PI*funcs.fvx(Math.PI*i/30), 
+                  vy: Math.PI*funcs.fvy(Math.PI*i/30), 
+                   t: Math.PI*i/30 };
+        });
+
+    }
 
     var width1 = parseInt( trjsvg.style("width")),
         width2 = parseInt(xoftsvg.style("width")),
@@ -148,21 +158,30 @@
     var chart1 = lineChart().width(width1).height(height)
                             .xTitle("Coordinata x").yTitle("Coordinata y")
                             .vx(function(d){return vsc*d.vx}).vy(function(d){return vsc*d.vy});
-    trjsvg.call(chart1);
 
     var chart2 = lineChart().width(width2).height(height)
                             .x(function(d){return d.t}).y(function(d){return d.x})
                             .vx(function(d){return vsc*Math.PI}).vy(function(d){return vsc*d.vx})
                             .xTitle("Tempo t").yTitle("Coordinata x")
                             .xDomain([0,2*Math.PI]);
-    xoftsvg.call(chart2);
 
     var chart3 = lineChart().width(width2).height(height)
                             .x(function(d){return d.t}).y(function(d){return d.y})
                             .vx(function(d){return vsc*Math.PI}).vy(function(d){return vsc*d.vy})
                             .xTitle("Tempo t").yTitle("Coordinata y")
                             .xDomain([0,2*Math.PI]);
-    yoftsvg.call(chart3);
+    function upd()
+    { 
+        calcdata();
+        trjsvg  = d3.select("#traj").datum(data);
+        xoftsvg = d3.select("#xoft").datum(data);
+        yoftsvg = d3.select("#yoft").datum(data);
+
+         trjsvg.call(chart1);
+        xoftsvg.call(chart2);
+        yoftsvg.call(chart3);
+    }
+    upd();
 
     </script>
   </body>
