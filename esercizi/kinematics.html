@@ -107,10 +107,10 @@
     <script src="js/lineChart.js"></script>
     <script>
 
-    d3.select("#inx").node().value = "(Math.cos(t)+2)/4";
-    d3.select("#iny").node().value = "(Math.sin(t)+2)/4";
-    d3.select("#invx").node().value = "-Math.sin(t)/4";
-    d3.select("#invy").node().value = "Math.cos(t)/4";
+    d3.select("#inx").node().value = "(Math.cos(6*t-t*t)+2)/4";
+    d3.select("#iny").node().value = "(Math.sin(6*t-t*t)+2)/4";
+    d3.select("#invx").node().value = "-Math.sin(6*t-t*t)*(6-2*t)/4";
+    d3.select("#invy").node().value = "Math.cos(6*t-t*t)*(6-2*t)/4";
 
     function parseInputs()
     {
@@ -139,12 +139,12 @@
     {
         var funcs = parseInputs();
         
-        data = d3.range(61).map(function(i) {
-          return { x: funcs.fx(Math.PI*i/30), 
-                   y: funcs.fy(Math.PI*i/30), 
-                  vx: Math.PI*funcs.fvx(Math.PI*i/30), 
-                  vy: Math.PI*funcs.fvy(Math.PI*i/30), 
-                   t: Math.PI*i/30 };
+        data = d3.range(601).map(function(i) {
+          return { x: funcs.fx(Math.PI*i/300), 
+                   y: funcs.fy(Math.PI*i/300), 
+                  vx: Math.PI*funcs.fvx(Math.PI*i/300), 
+                  vy: Math.PI*funcs.fvy(Math.PI*i/300), 
+                   t: Math.PI*i/300 };
         });
 
     }
@@ -153,7 +153,7 @@
         width2 = parseInt(xoftsvg.style("width")),
         height = width1;
     
-    var vsc = 1/5;
+    var vsc = 1/20;
 
     var chart1 = lineChart().width(width1).height(height)
                             .xTitle("Coordinata x").yTitle("Coordinata y")

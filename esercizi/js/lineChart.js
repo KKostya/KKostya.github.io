@@ -67,7 +67,7 @@ function lineChart() {
                svg.select(".velocity").attr("x1", xScale(x(data[i]))).attr("y1", yScale(y(data[i])))
                    .attr("x2", xScale(x(data[i]) + vx(data[i]))).attr("y2", yScale(y(data[i]) + vy(data[i])));
                i++; if(i >= data.length) i = 0;
-               d3.timer(tupdate,100); 
+               d3.timer(tupdate,10); 
                return true;
             }
             if(lnch) d3.timer(tupdate,0); 
